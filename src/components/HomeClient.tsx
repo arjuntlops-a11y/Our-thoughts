@@ -4,7 +4,20 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import type { CoupleName } from "@/lib/session";
+import {
+  feelingsPlaceholder,
+  missMsgPlaceholder,
+  partnerOf,
+  personalizedHomeSubtitle,
+  personalizedMissCta,
+  personalizedMissButton,
+  photoWallSubtitle,
+} from "@/lib/personalization";
 import { MissYouModal } from "./MissYouModal";
+import { FloatingHearts } from "./FloatingHearts";
+import { CatCompanion } from "./CatCompanion";
+import { WeatherParticles, WeatherSwitcher, useWeatherVibe } from "./WeatherDecor";
 
 type Photo = {
   id: string;
@@ -43,6 +56,7 @@ export function HomeClient() {
   const [caption, setCaption] = useState("");
   const [busy, setBusy] = useState(false);
   const [missOpen, setMissOpen] = useState(false);
+  const { weather, setWeather, shuffle, options } = useWeatherVibe();
 
   const api = useCallback(
     async (path: string, init?: RequestInit) => {
@@ -232,51 +246,64 @@ export function HomeClient() {
     );
   }
 
+  const viewer = user as CoupleName;
+  const partner = partnerOf(viewer);
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-      <MissYouModal open={missOpen} onClose={() => setMissOpen(false)} />
+    <div className="weather-shell" data-weather={weather}>
+      <WeatherParticles weather={weather} />
+      <FloatingHearts />
 
-      <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-extrabold uppercase tracking-[0.25em] text-pink-500">Hi {user}</p>
-          <h1 className="mt-1 text-4xl font-extrabold text-purple-950 sm:text-5xl">Our cozy space</h1>
-          <p className="mt-2 max-w-xl text-lg font-semibold text-purple-900/75">
-            For photos, soft feelings, bucket-list dreams, dates that matter — and a button for when the heart misses its person.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={logout}
-          className="self-start rounded-2xl bg-white/70 px-5 py-2.5 text-sm font-extrabold text-purple-900 shadow-sm ring-1 ring-pink-200/80 transition hover:bg-white"
-        >
-          Log out
-        </button>
-      </header>
+      <div className="relative z-10 mx-auto max-w-5xl px-4 py-10 sm:px-6">
+        <MissYouModal open={missOpen} onClose={() => setMissOpen(false)} viewerName={viewer} />
 
-      <motion.section
-        className="mb-10 rounded-[2rem] bg-gradient-to-br from-pink-400 via-rose-400 to-violet-500 p-[1px] shadow-xl shadow-pink-300/40"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="rounded-[1.95rem] bg-white/90 px-6 py-6 sm:px-8 sm:py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-extrabold text-purple-950">Missing each other?</h2>
-              <p className="mt-1 font-semibold text-purple-900/70">Tap for a tiny show of your photos and sweet notes.</p>
-            </div>
+        <header className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-xl">
+            <p className="text-sm font-extrabold uppercase tracking-[0.25em] text-pink-500">
+              Hi {user} 💕
+            </p>
+            <h1 className="mt-1 text-4xl font-extrabold text-purple-950 sm:text-5xl">Your cozy space</h1>
+            <p className="mt-2 text-lg font-semibold text-purple-900/80">{personalizedHomeSubtitle(viewer)}</p>
+            <p className="mt-2 text-sm font-bold text-purple-900/55">
+              {partner} is your person today — every card below is yours to fill with love.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:items-end">
             <button
               type="button"
-              onClick={() => setMissOpen(true)}
-              className="animate-pulse-soft inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 to-violet-600 px-6 py-4 text-lg font-extrabold text-white shadow-lg"
+              onClick={logout}
+              className="rounded-2xl bg-white/70 px-5 py-2.5 text-sm font-extrabold text-purple-900 shadow-sm ring-1 ring-pink-200/80 transition hover:bg-white"
             >
-              <span className="text-2xl">💌</span> Open the miss-you moment
+              Log out
             </button>
+            <WeatherSwitcher weather={weather} options={options} onSelect={setWeather} onShuffle={shuffle} />
           </div>
-        </div>
-      </motion.section>
+        </header>
+
+        <motion.section
+          className="mb-10 rounded-[2rem] bg-gradient-to-br from-pink-400 via-rose-400 to-violet-500 p-[1px] shadow-xl shadow-pink-300/40"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="rounded-[1.95rem] bg-white/90 px-6 py-6 sm:px-8 sm:py-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-extrabold text-purple-950">Missing {partner}?</h2>
+                <p className="mt-1 font-semibold text-purple-900/75">{personalizedMissCta(viewer)}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMissOpen(true)}
+                className="animate-pulse-soft inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-500 to-violet-600 px-6 py-4 text-lg font-extrabold text-white shadow-lg"
+              >
+                <span className="text-2xl">💌</span> {personalizedMissButton()}
+              </button>
+            </div>
+          </div>
+        </motion.section>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <Section title="Photo wall" subtitle="Little memories, big smiles.">
+        <Section title="Photo wall 📸" subtitle={photoWallSubtitle(partner)}>
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
             <label className="flex flex-1 flex-col text-sm font-bold text-purple-900/80">
               Caption (optional)
@@ -323,13 +350,13 @@ export function HomeClient() {
           )}
         </Section>
 
-        <Section title="Feelings" subtitle="Short notes, long hugs.">
+        <Section title="Feelings 💭" subtitle={`Tiny notes for ${partner} (and future you).`}>
           <form onSubmit={addFeeling} className="mb-4 flex flex-col gap-2 sm:flex-row">
             <input
               value={feelText}
               onChange={(e) => setFeelText(e.target.value)}
               className="flex-1 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 font-semibold text-purple-950 shadow-inner outline-none ring-2 ring-transparent focus:ring-pink-300"
-              placeholder="Something you’re grateful for, something sweet…"
+              placeholder={feelingsPlaceholder(viewer)}
             />
             <button
               type="submit"
@@ -352,7 +379,7 @@ export function HomeClient() {
           </ul>
         </Section>
 
-        <Section title="Bucket list" subtitle="Adventures for two.">
+        <Section title="Bucket list 🧺" subtitle={`Dreams to tick off with ${partner}.`}>
           <form onSubmit={addBucket} className="mb-4 flex flex-col gap-2 sm:flex-row">
             <input
               value={bucketText}
@@ -403,7 +430,7 @@ export function HomeClient() {
           </ul>
         </Section>
 
-        <Section title="Special dates" subtitle="Anniversaries, firsts, silly milestones.">
+        <Section title="Special dates 🗓️" subtitle="Anniversaries, firsts, silly milestones — never forget the magic.">
           <form onSubmit={addDate} className="mb-4 grid gap-3 sm:grid-cols-2">
             <input
               value={dateTitle}
@@ -456,8 +483,8 @@ export function HomeClient() {
         </Section>
 
         <Section
-          title="Miss-you messages"
-          subtitle="Tiny lines that can appear in the miss-you moment (plus built-in cute ones)."
+          title="Miss-you messages 💬"
+          subtitle={`Sweet lines for ${partner} — they’ll mix with the built-in notes in your personalized miss-you moment.`}
           className="lg:col-span-2"
         >
           <form onSubmit={addMiss} className="mb-4 flex flex-col gap-2 sm:flex-row">
@@ -465,7 +492,7 @@ export function HomeClient() {
               value={missText}
               onChange={(e) => setMissText(e.target.value)}
               className="flex-1 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 font-semibold text-purple-950 shadow-inner outline-none ring-2 ring-transparent focus:ring-pink-300"
-              placeholder="Write something that would make them melt…"
+              placeholder={missMsgPlaceholder(viewer)}
             />
             <button
               type="submit"
@@ -494,9 +521,12 @@ export function HomeClient() {
         </Section>
       </div>
 
-      <footer className="mt-14 text-center text-xs font-bold uppercase tracking-[0.2em] text-purple-900/35">
-        Made with love · Arjun & Soumya
-      </footer>
+        <footer className="mt-14 text-center text-xs font-bold uppercase tracking-[0.2em] text-purple-900/35">
+          {viewer} 💗 {partner} · always
+        </footer>
+      </div>
+
+      <CatCompanion weather={weather} partnerName={partner} />
     </div>
   );
 }

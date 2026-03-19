@@ -2,18 +2,21 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import type { CoupleName } from "@/lib/session";
 
 type SlidePhoto = { id: string; url: string; caption: string | null };
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  viewerName: CoupleName;
 };
 
-export function MissYouModal({ open, onClose }: Props) {
+export function MissYouModal({ open, onClose, viewerName }: Props) {
   const [loading, setLoading] = useState(true);
   const [photos, setPhotos] = useState<SlidePhoto[]>([]);
   const [messages, setMessages] = useState<string[]>([]);
+  const [partnerName, setPartnerName] = useState<string>("");
   const [idx, setIdx] = useState(0);
 
   const load = useCallback(async () => {
@@ -24,13 +27,14 @@ export function MissYouModal({ open, onClose }: Props) {
       const data = await res.json();
       setPhotos(data.photos ?? []);
       setMessages(data.messages ?? []);
+      setPartnerName(data.partner ?? (viewerName === "Arjun" ? "Soumya" : "Arjun"));
     } catch {
       setPhotos([]);
       setMessages([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [viewerName]);
 
   useEffect(() => {
     if (!open) return;
@@ -46,8 +50,20 @@ export function MissYouModal({ open, onClose }: Props) {
     return () => window.clearInterval(t);
   }, [open, loading, photos.length, messages.length]);
 
-  const message = messages.length ? messages[idx % messages.length] : "You two are loved more than Wi‑Fi at midnight.";
+  const message = messages.length
+    ? messages[idx % messages.length]
+    : "You two are loved more than Wi‑Fi at midnight.";
   const photo = photos.length ? photos[idx % photos.length] : null;
+
+  const headline =
+    viewerName === "Arjun"
+      ? "Soumya’s love notes for you"
+      : "Arjun’s love notes for you";
+
+  const sub =
+    viewerName === "Arjun"
+      ? "Photos from your story together — plus lines Soumya would want you to feel."
+      : "Photos from your story together — plus lines Arjun would want you to feel.";
 
   return (
     <AnimatePresence>
@@ -79,18 +95,22 @@ export function MissYouModal({ open, onClose }: Props) {
 
             <div className="relative p-6 sm:p-8">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-pink-600/90">Missing you</p>
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-pink-600/90">For {viewerName}</p>
+                  <p className="text-lg font-extrabold text-purple-950">{headline}</p>
+                  <p className="mt-0.5 text-xs font-semibold text-purple-900/60">{sub}</p>
+                </div>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-full bg-white/70 px-3 py-1 text-sm font-semibold text-purple-900 shadow-sm ring-1 ring-pink-200/80 transition hover:bg-white"
+                  className="shrink-0 rounded-full bg-white/70 px-3 py-1 text-sm font-semibold text-purple-900 shadow-sm ring-1 ring-pink-200/80 transition hover:bg-white"
                 >
                   Close ✕
                 </button>
               </div>
 
               {loading ? (
-                <p className="py-16 text-center text-lg font-semibold text-purple-900/70">Gathering hugs…</p>
+                <p className="py-16 text-center text-lg font-semibold text-purple-900/70">Gathering hugs from {partnerName}…</p>
               ) : (
                 <>
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-pink-100 to-violet-100 shadow-inner ring-1 ring-white/80">
@@ -109,7 +129,9 @@ export function MissYouModal({ open, onClose }: Props) {
                         ) : (
                           <div className="flex flex-col items-center gap-3 p-8 text-center">
                             <span className="animate-floaty text-6xl">💕</span>
-                            <span className="text-lg font-bold text-purple-900/80">Add photos in your gallery — they’ll sparkle here too.</span>
+                            <span className="text-lg font-bold text-purple-900/80">
+                              Add photos in your gallery — they’ll sparkle here for {partnerName} too.
+                            </span>
                           </div>
                         )}
                       </motion.div>
@@ -132,7 +154,7 @@ export function MissYouModal({ open, onClose }: Props) {
                   </motion.div>
 
                   <p className="mt-4 text-center text-xs font-semibold uppercase tracking-widest text-purple-900/45">
-                    Made with extra sparkles · Arjun & Soumya
+                    {partnerName} 💗 {viewerName} · always
                   </p>
                 </>
               )}

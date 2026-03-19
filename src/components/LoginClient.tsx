@@ -56,7 +56,14 @@ export function LoginClient() {
         <div className="mb-6 text-center">
           <p className="text-sm font-extrabold uppercase tracking-[0.25em] text-pink-500">Welcome home</p>
           <h1 className="mt-2 text-3xl font-extrabold text-purple-950 sm:text-4xl">Arjun & Soumya</h1>
-          <p className="mt-2 text-base font-semibold text-purple-900/70">Your cozy corner for photos, feelings, and little dreams.</p>
+          <p className="mt-2 text-base font-semibold text-purple-900/70">
+            Your cozy corner for photos, feelings, and little dreams.
+          </p>
+          <p className="mt-2 rounded-2xl bg-pink-100/60 px-3 py-2 text-sm font-bold text-pink-800/90">
+            {name === "Arjun"
+              ? "We’ll tailor the whole vibe for you — Soumya’s love notes, your weather, your miss-you moment."
+              : "We’ll tailor the whole vibe for you — Arjun’s love notes, your weather, your miss-you moment."}
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">

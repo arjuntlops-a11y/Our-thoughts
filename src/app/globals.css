@@ -24,6 +24,95 @@ body {
     linear-gradient(160deg, var(--bg-start), var(--bg-mid) 45%, var(--bg-end));
 }
 
+/* Home “weather” moods — layered gradients + particles */
+.weather-shell {
+  position: relative;
+  min-height: 100vh;
+  transition:
+    background 0.9s ease,
+    color 0.4s ease;
+}
+
+.weather-shell[data-weather="rain"] {
+  background:
+    radial-gradient(900px 500px at 80% -20%, rgba(147, 197, 253, 0.45), transparent 55%),
+    radial-gradient(700px 400px at 0% 100%, rgba(196, 181, 253, 0.35), transparent 50%),
+    linear-gradient(165deg, #dbeafe 0%, #fef9c3 50%, #e0e7ff 100%);
+}
+
+.weather-shell[data-weather="summer"] {
+  background:
+    radial-gradient(1000px 600px at 10% 0%, rgba(253, 224, 71, 0.5), transparent 50%),
+    radial-gradient(800px 500px at 100% 30%, rgba(251, 146, 60, 0.25), transparent 55%),
+    linear-gradient(155deg, #fffbeb 0%, #ffedd5 40%, #fce7f3 100%);
+}
+
+.weather-shell[data-weather="winter"] {
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(224, 242, 254, 0.65), transparent 55%),
+    radial-gradient(600px 400px at 100% 100%, rgba(199, 210, 254, 0.4), transparent 50%),
+    linear-gradient(170deg, #e0f2fe 0%, #f5f3ff 55%, #ddd6fe 100%);
+}
+
+.weather-shell[data-weather="autumn"] {
+  background:
+    radial-gradient(900px 500px at 0% 0%, rgba(254, 215, 170, 0.55), transparent 50%),
+    radial-gradient(800px 500px at 100% 80%, rgba(251, 113, 133, 0.2), transparent 55%),
+    linear-gradient(160deg, #fff7ed 0%, #ffedd5 45%, #fce7f3 100%);
+}
+
+.rain-line {
+  animation-name: rain-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rain-fall {
+  from {
+    transform: translateY(-120px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110vh);
+    opacity: 0.45;
+  }
+}
+
+.snow-flake {
+  animation-name: snow-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes snow-drift {
+  0% {
+    transform: translate(0, -8vh) rotate(0deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(18px, 108vh) rotate(200deg);
+    opacity: 0.65;
+  }
+}
+
+.leaf-drop {
+  animation-name: leaf-fall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(-12vh) rotate(0deg);
+  }
+  100% {
+    transform: translateY(110vh) rotate(280deg);
+  }
+}
+
 @keyframes floaty {
   0%,
   100% {
