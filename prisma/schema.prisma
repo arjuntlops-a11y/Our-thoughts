@@ -1,11 +1,12 @@
-// Neon: use pooled DATABASE_URL only (Vercel has no DIRECT_URL).
+// `directUrl` uses the same env as `url` so only DATABASE_URL is required (e.g. on Vercel).
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 model Photo {

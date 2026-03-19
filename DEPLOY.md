@@ -22,7 +22,7 @@ You’ll host the app on **Vercel** (always-on HTTPS URL), store data in **Neon*
 2. **Create project** → create a database (default is fine).
 3. Open **Connection details** (or Dashboard → your branch → Connect).
 4. Copy the **pooled** connection string (host often contains `-pooler`) → this is **`DATABASE_URL`** on Vercel.  
-   It should include SSL (`sslmode=require`). **You only need this one variable** for Prisma now.
+   It should include SSL (`sslmode=require`). Prisma is configured so **only `DATABASE_URL`** is required (no separate `DIRECT_URL`).
 
 ---
 
