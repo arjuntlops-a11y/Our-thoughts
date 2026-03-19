@@ -1,3 +1,4 @@
+// Neon: use pooled DATABASE_URL only (Vercel has no DIRECT_URL).
 generator client {
   provider = "prisma-client-js"
 }
