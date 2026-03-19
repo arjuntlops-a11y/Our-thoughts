@@ -21,10 +21,8 @@ You’ll host the app on **Vercel** (always-on HTTPS URL), store data in **Neon*
 1. Go to [neon.tech](https://neon.tech) and sign up.
 2. **Create project** → create a database (default is fine).
 3. Open **Connection details** (or Dashboard → your branch → Connect).
-4. Copy **two** strings:
-   - **Pooled** / “with connection pooling” → this is **`DATABASE_URL`**.
-   - **Direct** / “non-pooled” / “for migrations” → this is **`DIRECT_URL`**.
-5. Both should include SSL (`sslmode=require` is usually in the URL). Keep them secret.
+4. Copy the **pooled** connection string (host often contains `-pooler`) → this is **`DATABASE_URL`** on Vercel.  
+   It should include SSL (`sslmode=require`). **You only need this one variable** for Prisma now.
 
 ---
 
@@ -36,8 +34,7 @@ You’ll host the app on **Vercel** (always-on HTTPS URL), store data in **Neon*
 
 | Name | Value |
 |------|--------|
-| `DATABASE_URL` | Neon **pooled** URL |
-| `DIRECT_URL` | Neon **direct** URL |
+| `DATABASE_URL` | Neon **pooled** URL (from Neon dashboard) |
 | `COUPLE_SECRET` | Your shared login password (only you two know) |
 | `SESSION_SECRET` | Long random secret (e.g. run `openssl rand -hex 32` in Terminal) |
 
@@ -79,7 +76,7 @@ From your laptop, point at Neon (copy `DATABASE_URL` from Vercel or Neon into a 
 
 ```bash
 cd thoughts-app
-DATABASE_URL="postgresql://..." DIRECT_URL="postgresql://..." npx prisma db seed
+DATABASE_URL="postgresql://..." npx prisma db seed
 ```
 
 ---
@@ -88,7 +85,7 @@ DATABASE_URL="postgresql://..." DIRECT_URL="postgresql://..." npx prisma db seed
 
 | Issue | What to check |
 |--------|----------------|
-| Build fails on `prisma migrate` | `DATABASE_URL` / `DIRECT_URL` wrong; Neon project paused; SSL params. |
+| Build fails on `prisma migrate` | `DATABASE_URL` wrong or missing; Neon project paused; SSL params. |
 | Login works but photos disappear | **Blob** not connected + `BLOB_READ_WRITE_TOKEN` missing → do Step C + redeploy. |
 | 401 on login | `COUPLE_SECRET` on Vercel doesn’t match what you type. |
 

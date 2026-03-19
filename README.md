@@ -10,7 +10,7 @@ docker compose up -d
 cp .env.example .env
 ```
 
-Edit `.env`: set `COUPLE_SECRET`, `SESSION_SECRET`, and keep the default `DATABASE_URL` / `DIRECT_URL` if using Docker.
+Edit `.env`: set `COUPLE_SECRET`, `SESSION_SECRET`, and `DATABASE_URL` (default matches Docker Postgres).
 
 ```bash
 npm install
