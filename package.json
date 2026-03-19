@@ -4,11 +4,21 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "@vercel/blob": "^2.3.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
+    "framer-motion": "^12.38.0",
+    "jose": "^6.2.2",
     "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -20,7 +30,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.0",
+    "prisma": "^6.19.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
