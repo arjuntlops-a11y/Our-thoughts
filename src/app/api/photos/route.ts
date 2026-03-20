@@ -33,7 +33,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Keep photos under 8MB for snuggly loading times." }, { status: 400 });
   }
 
-  const { url } = await savePhoto(buf, ext);
+  let url: string;
+  try {
+    ({ url } = await savePhoto(buf, ext));
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Could not save photo.";
+    console.error("[photos POST]", e);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 
   const photo = await prisma.photo.create({
     data: {

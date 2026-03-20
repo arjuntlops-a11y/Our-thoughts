@@ -55,6 +55,7 @@ export function HomeClient() {
   const [missText, setMissText] = useState("");
   const [caption, setCaption] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [missOpen, setMissOpen] = useState(false);
   const { weather, setWeather, shuffle, options } = useWeatherVibe();
 
@@ -117,15 +118,19 @@ export function HomeClient() {
   async function uploadPhoto(file: File | null) {
     if (!file) return;
     setBusy(true);
+    setUploadError(null);
     try {
       const fd = new FormData();
       fd.append("file", file);
       if (caption.trim()) fd.append("caption", caption.trim());
       const res = await fetch("/api/photos", { method: "POST", body: fd, credentials: "include" });
-      if (res.ok) {
-        setCaption("");
-        await load();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setUploadError(typeof data.error === "string" ? data.error : "Upload failed — try again.");
+        return;
       }
+      setCaption("");
+      await load();
     } finally {
       setBusy(false);
     }
@@ -325,6 +330,11 @@ export function HomeClient() {
               />
             </label>
           </div>
+          {uploadError ? (
+            <p className="mb-3 rounded-2xl bg-rose-100/90 px-4 py-3 text-sm font-semibold text-rose-900 ring-1 ring-rose-200">
+              {uploadError}
+            </p>
+          ) : null}
           {photos.length === 0 ? (
             <Empty hint="Upload your first photo — the miss-you moment will love it." />
           ) : (

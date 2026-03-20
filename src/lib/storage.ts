@@ -28,13 +28,24 @@ function blobStorageEnabled() {
 }
 
 export async function savePhoto(buffer: Buffer, ext: string) {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+
   if (blobStorageEnabled()) {
     const pathname = `photos/${randomUUID()}${ext}`;
     const blob = await put(pathname, buffer, {
       access: "public",
       contentType: mimeForExt(ext),
+      token,
+      addRandomSuffix: true,
     });
     return { url: blob.url };
+  }
+
+  // Serverless (Vercel) has no persistent disk — local uploads never work in production.
+  if (process.env.VERCEL === "1") {
+    throw new Error(
+      "Photo storage is not configured. In Vercel: open your project → Storage → Blob → create/link a store so BLOB_READ_WRITE_TOKEN is set, then Redeploy.",
+    );
   }
 
   await mkdir(UPLOAD_DIR, { recursive: true });
@@ -45,7 +56,7 @@ export async function savePhoto(buffer: Buffer, ext: string) {
 
 export async function deletePhoto(url: string) {
   if (url.startsWith("http")) {
-    await del(url);
+    await del(url, { token: process.env.BLOB_READ_WRITE_TOKEN });
     return;
   }
   const base = path.basename(url);

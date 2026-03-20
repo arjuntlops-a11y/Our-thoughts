@@ -46,9 +46,9 @@ You’ll host the app on **Vercel** (always-on HTTPS URL), store data in **Neon*
 
 ---
 
-## Step C — Blob (photos in production)
+## Step C — Blob (photos in production) — **required**
 
-Without a Blob store, **photo uploads won’t persist** on Vercel.
+Without Blob, **photo uploads will not work** on Vercel (there is no persistent disk). The app will show an error until Blob is configured.
 
 1. In the Vercel project: **Storage** → **Create** → **Blob** → create a store.
 2. **Connect** it to this project.  
